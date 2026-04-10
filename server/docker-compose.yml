@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  battery-api:
+    build: .
+    container_name: battery-manager-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=development
+      - PYTHONUNBUFFERED=1
+    develop:
+      watch:
+        - action: sync
+          path: ./app
+          target: /app/app
+        - action: rebuild
+          path: ./requirements.txt
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
