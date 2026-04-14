@@ -1,8 +1,5 @@
 from fastapi import APIRouter
-from app.api.v1.endpoints import anomaly, inference, sessions
+from app.api.v1 import router as v1_router
 
 router = APIRouter()
-
-router.include_router(anomaly.router)
-router.include_router(inference.router)
-router.include_router(sessions.router)
+router.include_router(v1_router, prefix="/v1")
