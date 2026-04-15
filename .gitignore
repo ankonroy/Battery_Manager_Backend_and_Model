@@ -35,13 +35,13 @@ outputs/
 
 # Datasets and models
 model/data/
-model/models/
+# model/models/
 *.zip
 *.mat
 *.h5
 *.pth
-*.pkl
-*.joblib
+# *.pkl
+# *.joblib
 *.csv
 *.json
 !model/__marimo__/session/notebook.py.json  # Keep marimo metadata if needed
