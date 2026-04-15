@@ -18,9 +18,13 @@ class BatteryTelemetryRaw(Base):
     """Raw per-minute battery telemetry."""
     
     __tablename__ = "battery_telemetry_raw"
+    __table_args__ = (
+        PrimaryKeyConstraint("time", "device_id"),
+        {"schema": "battery_data"}
+    )
     
     time = Column(TIMESTAMP(timezone=True), nullable=False)
-    device_id = Column(String(64), nullable=False)  # ← Android ID
+    device_id = Column(String(64), nullable=False)
     session_id = Column(String(128), nullable=True)
     
     # Battery state
@@ -44,7 +48,3 @@ class BatteryTelemetryRaw(Base):
     # Foreground app
     foreground_package = Column(String(256))
     foreground_app = Column(String(256))
-    
-    __table_args__ = (
-        PrimaryKeyConstraint("time", "device_id"),
-    )
