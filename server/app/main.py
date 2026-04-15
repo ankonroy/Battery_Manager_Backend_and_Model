@@ -1,8 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import predict, anomaly  # Add anomaly import
+from app.api.v1.endpoints import predict, anomaly, telemetry
 from app.models.ml_model import ml_model
-from app.models.anomaly import get_anomaly_detector  # Add this import
+from app.models.anomaly import get_anomaly_detector
+from app.database.connection import check_database_connection
 
 app = FastAPI(
     title="Battery Manager AI Backend",
@@ -22,10 +23,18 @@ app.add_middleware(
 # Load model on startup
 @app.on_event("startup")
 async def startup_event():
-    """Load ML models when API starts."""
+    """Load ML models and check database when API starts."""
     print("=" * 50)
     print("🚀 Starting Battery Manager AI Backend...")
     print("=" * 50)
+    
+    # Check database connection
+    print("\n🗄️ Checking database connection...")
+    db_connected = await check_database_connection()
+    if db_connected:
+        print("   ✅ Database connected successfully")
+    else:
+        print("   ⚠️ Database connection failed - telemetry will not work")
     
     # Load RUL model
     print("\n📊 Loading battery RUL model...")
@@ -52,7 +61,8 @@ async def startup_event():
 
 # Include routes
 app.include_router(predict.router, prefix="/api/v1")
-app.include_router(anomaly.router, prefix="/api/v1")  # Add anomaly router
+app.include_router(anomaly.router, prefix="/api/v1")
+app.include_router(telemetry.router, prefix="/api/v1")
 
 
 @app.get("/")
@@ -64,6 +74,9 @@ async def root():
             "anomaly": "/api/v1/anomaly/detect",
             "anomaly_features": "/api/v1/anomaly/features",
             "anomaly_health": "/api/v1/anomaly/health",
+            "telemetry_ingest": "/api/v1/telemetry/ingest",
+            "telemetry_stats": "/api/v1/telemetry/stats",
+            "telemetry_health": "/api/v1/telemetry/health",
             "health": "/health"
         }
     }
@@ -71,7 +84,10 @@ async def root():
 
 @app.get("/health")
 async def health_check():
-    """Comprehensive health check for all models."""
+    """Comprehensive health check for all models and database."""
+    # Check database
+    db_connected = await check_database_connection()
+    
     # Check RUL model
     rul_loaded = ml_model.is_loaded
     
@@ -85,7 +101,7 @@ async def health_check():
         anomaly_features = 0
     
     # Determine overall status
-    if rul_loaded and anomaly_loaded:
+    if rul_loaded and anomaly_loaded and db_connected:
         status = "healthy"
     elif rul_loaded or anomaly_loaded:
         status = "degraded"
@@ -94,6 +110,9 @@ async def health_check():
     
     return {
         "status": status,
+        "database": {
+            "connected": db_connected
+        },
         "models": {
             "rul": {
                 "loaded": rul_loaded
