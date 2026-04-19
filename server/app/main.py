@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import predict, anomaly, telemetry
+from app.api import router as api_router
 from app.models.ml_model import ml_model
 from app.models.anomaly import get_anomaly_detector
 from app.database.connection import check_database_connection
@@ -59,10 +59,8 @@ async def startup_event():
     print("=" * 50)
 
 
-# Include routes
-app.include_router(predict.router, prefix="/api/v1")
-app.include_router(anomaly.router, prefix="/api/v1")
-app.include_router(telemetry.router, prefix="/api/v1")
+# Include all API routes with /api prefix
+app.include_router(api_router, prefix="/api")
 
 
 @app.get("/")
@@ -71,12 +69,15 @@ async def root():
         "message": "Battery Manager AI Backend is running",
         "endpoints": {
             "predict": "/api/v1/predict",
-            "anomaly": "/api/v1/anomaly/detect",
+            "anomaly_detect": "/api/v1/anomaly/detect",
             "anomaly_features": "/api/v1/anomaly/features",
             "anomaly_health": "/api/v1/anomaly/health",
             "telemetry_ingest": "/api/v1/telemetry/ingest",
             "telemetry_stats": "/api/v1/telemetry/stats",
             "telemetry_health": "/api/v1/telemetry/health",
+            "advice_ask": "/api/v1/advice/ask",
+            "advice_auto": "/api/v1/advice/auto/{device_id}",
+            "advice_health": "/api/v1/advice/health",
             "health": "/health"
         }
     }

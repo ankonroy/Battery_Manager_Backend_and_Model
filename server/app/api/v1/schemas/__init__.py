@@ -18,6 +18,14 @@ from app.api.v1.schemas.telemetry import (
     TelemetryResponse,
     TelemetryStatsResponse,
 )
+from app.api.v1.schemas.advice import (
+    AdviceRequest,
+    AdviceResponse,
+    FeatureAdviceRequest,
+    AutoAdviceRequest,
+    AutoAdviceResponse,
+    AdviceHealthResponse,
+)
 
 __all__ = [
     # Anomaly schemas
@@ -38,4 +46,11 @@ __all__ = [
     "TelemetryRequest",
     "TelemetryResponse",
     "TelemetryStatsResponse",
+    # Advice schemas
+    "AdviceRequest",
+    "AdviceResponse",
+    "FeatureAdviceRequest",
+    "AutoAdviceRequest",
+    "AutoAdviceResponse",
+    "AdviceHealthResponse",
 ]
