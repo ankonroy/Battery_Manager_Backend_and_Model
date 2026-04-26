@@ -9,6 +9,8 @@ services:
     environment:
       - ENVIRONMENT=development
       - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
     develop:
       watch:
         - action: sync
