@@ -117,7 +117,7 @@ class AnomalyDetector:
                 "deviation_score": 0.0,
                 "all_deviations": {},
                 "confidence": "low",
-                "message": "Anomaly detected but no single feature significantly deviates from normal ranges."
+                "message": "🔍 We noticed an unusual pattern in your battery behavior. This is usually temporary and resolves on its own."
             }
         
         # Find primary driver
@@ -164,28 +164,28 @@ class AnomalyDetector:
         
         templates = {
             'soh_percent': {
-                'high': f"Battery capacity ({value:.1f}%) is unusually high for this cycle count. Expected around {median:.1f}%.",
-                'low': f"Battery capacity ({value:.1f}%) is severely degraded. Expected around {median:.1f}%."
+                'high': f"📊 Unusual battery capacity detected ({value:.1f}%). This can happen after a system update or battery calibration change.",
+                'low': f"📉 Your battery capacity ({value:.1f}%) is lower than expected. This may indicate aging. Consider getting it checked."
             },
             'current_max_A': {
-                'high': f"Current spike detected: {value:.2f}A. Normal maximum is around {stats['q3']:.2f}A."
+                'high': f"⚡ Power spike detected. Your phone drew more power than usual. Check your charger and cable."
             },
             'duration_seconds': {
-                'high': f"Cycle duration ({value/3600:.1f} hours) is unusually long. Normal cycles take {median/3600:.1f} hours.",
-                'low': f"Cycle duration ({value/3600:.1f} hours) is abnormally short."
+                'high': f"⏱️ Your battery is taking longer to charge than expected ({value/3600:.1f} hours). This could be normal if you're using a slow charger.",
+                'low': f"⚡ Your battery charged faster than usual. If this happens often, your battery capacity may have decreased."
             },
             'voltage_min_V': {
-                'low': f"Deep discharge detected: voltage dropped to {value:.2f}V. Normal minimum is {stats['q1']:.2f}V."
+                'low': f"🪫 Battery drained unusually low ({value:.2f}V). Try to charge before your phone drops below 20% to preserve battery health."
             },
             'coulombic_efficiency': {
-                'low': f"Poor charging efficiency: only {value:.1%} of energy was recovered."
+                'low': f"🔌 Your battery isn't charging efficiently. This usually means a loose cable or faulty charger. Try a different one."
             },
             'current_cv': {
-                'high': f"Current instability detected: variation is {value:.1f}x higher than normal."
+                'high': f"🔋 Your charging current is fluctuating. This often happens with old or damaged cables."
             },
             'avg_power_W': {
-                'high': f"Unusually high power draw: {value:.2f}W. Normal is around {median:.2f}W.",
-                'low': f"Unusually low power draw: {value:.2f}W. Normal is around {median:.2f}W."
+                'high': f"📈 Unusually high power usage detected. Something may be running in the background.",
+                'low': f"📉 Your phone is using less power than usual. This is fine if your phone was idle."
             }
         }
         
@@ -193,7 +193,8 @@ class AnomalyDetector:
             return templates[feature][direction]
         
         # Generic fallback
-        return f"{feature} is unusually {direction} ({value:.3f} vs normal {median:.3f})."
+        # Generic fallback (around line 180)
+        return f"We noticed something unusual with your battery's {feature}. This is usually temporary and nothing to worry about."
     
     def get_required_features(self) -> List[str]:
         """Return the list of features required for prediction."""
